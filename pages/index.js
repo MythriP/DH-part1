@@ -1,7 +1,7 @@
 import { useState } from "react";
 import Papa from "papaparse";
-import Heading from "./components/Heading";
-import Navbar from "./components/Navbar";
+import Heading from "../components/Heading";
+import Navbar from "../components/Navbar";
 
 export default function Home() {
   const [fileName, setFileName] = useState("");
