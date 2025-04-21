@@ -54,10 +54,13 @@ export default function Home() {
         const hasAllHeaders = REQUIRED_FIELDS.every((h) =>
           uploadedHeaders.includes(h)
         );
+
+        addLog("success", "📁 File uploaded.");
+
         if (!hasAllHeaders) {
           addLog(
             "warning",
-            "⚠️ Might have uploaded wrong file, check the fields again."
+            "You might have entered wrong file. Re-check if these exist or not: Patient Name, Email, Phone, Referring Provider"
           );
         }
 
@@ -82,38 +85,49 @@ export default function Home() {
     const phoneRegex = /^(\+?\d{1,3}[- ]?)?\(?\d{3}\)?[- ]?\d{3}[- ]?\d{4}$/;
 
     const newValidationErrors = {};
-    let hasIssue = false;
+    let foundIssue = false;
 
     tableData.forEach((row, rowIndex) => {
       REQUIRED_FIELDS.forEach((field) => {
         if (!row[field]) {
           newValidationErrors[`${rowIndex}-${field}`] = "Missing field";
-          hasIssue = true;
+          addLog(
+            "error",
+            `Row ${rowIndex + 1}: Missing '${field}'. All fields are mandatory.`
+          );
+          foundIssue = true;
         }
       });
 
       if (row["Email"] && !emailRegex.test(row["Email"])) {
         newValidationErrors[`${rowIndex}-Email`] = "Invalid email";
-        hasIssue = true;
+        addLog(
+          "error",
+          `Row ${rowIndex + 1}: Invalid Email '${
+            row["Email"]
+          }'. Must be in format name@example.com`
+        );
+        foundIssue = true;
       }
 
       if (row["Phone"] && !phoneRegex.test(row["Phone"])) {
         newValidationErrors[`${rowIndex}-Phone`] = "Invalid phone number";
-        hasIssue = true;
+        addLog(
+          "error",
+          `Row ${rowIndex + 1}: Invalid Phone '${
+            row["Phone"]
+          }'. Must be a valid 10-digit number (can include dashes/brackets)`
+        );
+        foundIssue = true;
       }
     });
 
     setValidationErrors(newValidationErrors);
-
-    if (hasIssue) {
-      addLog("error", "⚠️ Fill all fields before saving.");
-    }
-
-    return hasIssue;
+    return foundIssue;
   };
 
   const handleSave = () => {
-    setLogMessages([]);
+    setLogMessages([]); // clear logs on save
 
     const hasRequiredHeaders = REQUIRED_FIELDS.every((field) =>
       headers.includes(field)
@@ -122,7 +136,7 @@ export default function Home() {
     if (!hasRequiredHeaders) {
       addLog(
         "error",
-        "Re-check if these exist or not: Patient Name, Email, Phone, Referring Provider"
+        "Required fields are not present: Patient Name, Email, Phone, Referring Provider"
       );
       return;
     }
@@ -130,7 +144,7 @@ export default function Home() {
     const hasErrors = validateTable();
 
     if (!hasErrors) {
-      addLog("success", " Data saved successfully!");
+      addLog("success", "Data saved successfully!");
     }
   };
 
