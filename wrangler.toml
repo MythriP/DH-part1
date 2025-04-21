@@ -1,4 +1,4 @@
-name = "dh-part1-api"
+name = "dh-part1"
 compatibility_date = "2025-04-20"
 main = "worker.js"
 compatibility_flags = ["nodejs_compat"]
